@@ -1,4 +1,4 @@
-FROM ubuntu:noble
+FROM ubuntu:resolute
 
 ARG sources
 ARG packages
@@ -20,8 +20,8 @@ RUN echo "$sources" > /etc/apt/sources.list.d/ubuntu.sources && \
     /usr/share/groff/* /usr/share/lintian/* /usr/share/linda/* \
     /var/lib/apt/lists/* /tmp/* /etc/apt/preferences && \
   rm /etc/os-release && cat /usr/lib/os-release | \
-    sed -e 's#PRETTY_NAME=.*#PRETTY_NAME="Paketo Buildpacks Base Noble"#' \
-        -e 's#HOME_URL=.*#HOME_URL="https://github.com/paketo-buildpacks/noble-base-stack"#' \
-        -e 's#SUPPORT_URL=.*#SUPPORT_URL="https://github.com/paketo-buildpacks/noble-base-stack/blob/main/README.md"#' \
-        -e 's#BUG_REPORT_URL=.*#BUG_REPORT_URL="https://github.com/paketo-buildpacks/noble-base-stack/issues/new"#' \
+    sed -e 's#PRETTY_NAME=.*#PRETTY_NAME="Paketo Buildpacks Base Resolute"#' \
+        -e 's#HOME_URL=.*#HOME_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images"#' \
+        -e 's#SUPPORT_URL=.*#SUPPORT_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images/blob/main/README.md"#' \
+        -e 's#BUG_REPORT_URL=.*#BUG_REPORT_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images/issues/new"#' \
   > /etc/os-release && rm /usr/lib/os-release
