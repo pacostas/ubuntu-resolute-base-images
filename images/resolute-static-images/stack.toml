@@ -1,11 +1,11 @@
-id = "io.buildpacks.stacks.noble.static"
-homepage = "https://github.com/paketo-buildpacks/noble-static-stack"
+id = "io.buildpacks.stacks.resolute.static"
+homepage = "https://github.com/paketo-buildpacks/ubuntu-resolute-base-images"
 maintainer = "Paketo Buildpacks"
 
 platforms = ["linux/amd64", "linux/arm64"]
 
 [build]
-  description = "ubuntu:noble with compilers and shell utilities"
+  description = "ubuntu:resolute with compilers and shell utilities"
   dockerfile = "./build.Dockerfile"
   gid = 1001
   shell = "/bin/bash"
@@ -14,36 +14,7 @@ platforms = ["linux/amd64", "linux/arm64"]
   [build.args]
     architecture = "amd64"
 
-    sources = """
-Types: deb
-URIs: http://archive.ubuntu.com/ubuntu/
-Suites: noble noble-updates
-Components: main universe multiverse
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-
-Types: deb
-URIs: http://security.ubuntu.com/ubuntu/
-Suites: noble-security
-Components: main universe multiverse
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-"""
-
-    packages = """\
-    build-essential \
-    ca-certificates \
-    curl \
-    git \
-    jq \
-    libgmp-dev \
-    libssl3t64 \
-    libssl-dev \
-    libyaml-0-2 \
-    netbase \
-    openssl \
-    pkg-config \
-    tzdata \
-    xz-utils \
-    zlib1g-dev"""
+    packages = ""
 
   [build.platforms."linux/arm64".args]
     architecture = "arm64"
@@ -51,12 +22,12 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
     sources = """
 Types: deb
 URIs: http://ports.ubuntu.com/ubuntu-ports/
-Suites: noble noble-updates noble-security
+Suites: resolute resolute-updates resolute-security
 Components: main universe multiverse
     """
 
 [run]
-  description = "noble for statically-linked applications containing tzdata and ca-certificates"
+  description = "resolute for statically-linked applications containing tzdata and ca-certificates"
   dockerfile = "./run/run.Dockerfile"
   gid = 1001
   shell = "/sbin/nologin"
@@ -68,13 +39,13 @@ Components: main universe multiverse
     sources = """
 Types: deb
 URIs: http://archive.ubuntu.com/ubuntu/
-Suites: noble noble-updates
+Suites: resolute resolute-updates
 Components: main universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
 Types: deb
 URIs: http://security.ubuntu.com/ubuntu/
-Suites: noble-security
+Suites: resolute-security
 Components: main universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 """
@@ -89,6 +60,6 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
     sources = """
 Types: deb
 URIs: http://ports.ubuntu.com/ubuntu-ports/
-Suites: noble noble-updates noble-security
+Suites: resolute resolute-updates resolute-security
 Components: main universe multiverse
     """

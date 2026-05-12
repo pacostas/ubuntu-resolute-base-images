@@ -1,4 +1,4 @@
-FROM ubuntu:noble AS builder
+FROM ubuntu:resolute AS builder
 
 ARG packages
 ARG sources
