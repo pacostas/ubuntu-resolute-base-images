@@ -15,7 +15,7 @@ import (
 	. "github.com/paketo-buildpacks/occam/matchers"
 )
 
-func testBuildpackIntegrationTinyStack(t *testing.T, context spec.G, it spec.S) {
+func testBuildpackIntegrationTinyImages(t *testing.T, context spec.G, it spec.S) {
 	var (
 		Expect     = NewWithT(t).Expect
 		Eventually = NewWithT(t).Eventually
@@ -55,18 +55,34 @@ func testBuildpackIntegrationTinyStack(t *testing.T, context spec.G, it spec.S) 
 		builderConfigFilepath = builderConfigFile.Name()
 
 		_, err = fmt.Fprintf(builderConfigFile, `
-[stack]
-  build-image = "%s:latest"
-  id = "io.buildpacks.stacks.noble"
-  run-image = "%s:latest"
+[build]
+  image = "%s:latest"
+
+[run]
+
+  [[run.images]]
+    image = "%s:latest"
+
+  [[run.images]]
+    image = "%s:latest"
+
+[[targets]]
+  arch = "amd64"
+  os = "linux"
+
+[[targets]]
+  arch = "arm64"
+  os = "linux"
 `,
-			baseStack.BuildImageID,
-			tinyStack.RunImageID,
+			baseImages.BuildImageID,
+			baseImages.RunImageID,
+			tinyImages.RunImageID,
 		)
 		Expect(err).NotTo(HaveOccurred())
 
-		Expect(archiveToDaemon(baseStack.BuildArchive, baseStack.BuildImageID)).To(Succeed())
-		Expect(archiveToDaemon(tinyStack.RunArchive, tinyStack.RunImageID)).To(Succeed())
+		Expect(archiveToDaemon(baseImages.BuildArchive, baseImages.BuildImageID)).To(Succeed())
+		Expect(archiveToDaemon(baseImages.RunArchive, baseImages.RunImageID)).To(Succeed())
+		Expect(archiveToDaemon(tinyImages.RunArchive, tinyImages.RunImageID)).To(Succeed())
 
 		builder = fmt.Sprintf("builder-%s", uuid.NewString())
 		logs, err := createBuilder(builderConfigFilepath, builder)
@@ -81,7 +97,7 @@ func testBuildpackIntegrationTinyStack(t *testing.T, context spec.G, it spec.S) 
 		Expect(docker.Image.Remove.Execute(builder)).To(Succeed())
 		Expect(os.RemoveAll(builderConfigFilepath)).To(Succeed())
 
-		Expect(docker.Image.Remove.Execute(tinyStack.RunImageID)).To(Succeed())
+		Expect(docker.Image.Remove.Execute(tinyImages.RunImageID)).To(Succeed())
 
 		Expect(os.RemoveAll(source)).To(Succeed())
 	})
@@ -98,9 +114,12 @@ func testBuildpackIntegrationTinyStack(t *testing.T, context spec.G, it spec.S) 
 				"BP_LOG_LEVEL": "DEBUG",
 			}).
 			WithPullPolicy("if-not-present").
+			WithRunImage(tinyImages.RunImageID).
 			WithBuilder(builder).
 			Execute(name, source)
 		Expect(err).ToNot(HaveOccurred(), logs.String)
+
+		Expect(logs.String()).To(ContainSubstring("Using provided run-image '%s'", tinyImages.RunImageID))
 
 		container, err = docker.Container.Run.
 			WithDirect().
