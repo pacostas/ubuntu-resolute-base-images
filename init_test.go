@@ -72,9 +72,9 @@ func TestAcceptance(t *testing.T) {
 	suite("MetadataBaseImages", testMetadataBaseImages)
 	suite("MetadataTinyImages", testMetadataTinyImages)
 	suite("MetadataStaticImages", testMetadataStaticImages)
-	suite("BuildpackIntegrationBaseStack", testBuildpackIntegrationBaseStack)
-	suite("BuildpackIntegrationTinyStack", testBuildpackIntegrationTinyStack)
-	suite("BuildpackIntegrationStaticStack", testBuildpackIntegrationStaticStack)
+	suite("BuildpackIntegrationBaseImages", testBuildpackIntegrationBaseImages)
+	suite("BuildpackIntegrationTinyImages", testBuildpackIntegrationTinyImages)
+	suite("BuildpackIntegrationStaticImages", testBuildpackIntegrationStaticImages)
 	suite.Run(t)
 }
 
