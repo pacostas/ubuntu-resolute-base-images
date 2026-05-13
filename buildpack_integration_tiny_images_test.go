@@ -63,9 +63,6 @@ func testBuildpackIntegrationTinyImages(t *testing.T, context spec.G, it spec.S)
   [[run.images]]
     image = "%s:latest"
 
-  [[run.images]]
-    image = "%s:latest"
-
 [[targets]]
   arch = "amd64"
   os = "linux"
@@ -73,10 +70,16 @@ func testBuildpackIntegrationTinyImages(t *testing.T, context spec.G, it spec.S)
 [[targets]]
   arch = "arm64"
   os = "linux"
+
+[stack]
+  build-image = "%s:latest"
+  id = "io.buildpacks.stacks.resolute"
+  run-image = "%s:latest"
 `,
 			baseImages.BuildImageID,
 			baseImages.RunImageID,
-			tinyImages.RunImageID,
+			baseImages.BuildImageID,
+			baseImages.RunImageID,
 		)
 		Expect(err).NotTo(HaveOccurred())
 
