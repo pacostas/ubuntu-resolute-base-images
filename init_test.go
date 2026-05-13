@@ -17,25 +17,21 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var tinyStack struct {
+var tinyImages struct {
+	RunArchive string
+	RunImageID string
+}
+
+var baseImages struct {
 	BuildArchive string
 	RunArchive   string
 	BuildImageID string
 	RunImageID   string
 }
 
-var baseStack struct {
-	BuildArchive string
-	RunArchive   string
-	BuildImageID string
-	RunImageID   string
-}
-
-var staticStack struct {
-	BuildArchive string
-	RunArchive   string
-	BuildImageID string
-	RunImageID   string
+var staticImages struct {
+	RunArchive string
+	RunImageID string
 }
 
 var RegistryUrl string
@@ -55,22 +51,22 @@ func TestAcceptance(t *testing.T) {
 	root, err := filepath.Abs(".")
 	Expect(err).ToNot(HaveOccurred())
 
-	baseStack.BuildArchive = filepath.Join(root, "builds", "noble-base-stack", "build.oci")
-	baseStack.BuildImageID = fmt.Sprintf("%s/noble-base-stack-build-%s", RegistryUrl, uuid.NewString())
+	baseImages.BuildArchive = filepath.Join(root, "builds", "resolute-base-images", "build.oci")
+	baseImages.BuildImageID = fmt.Sprintf("%s/resolute-base-build-image-%s", RegistryUrl, uuid.NewString())
 
-	baseStack.RunArchive = filepath.Join(root, "builds", "noble-base-stack", "run.oci")
-	baseStack.RunImageID = fmt.Sprintf("%s/noble-base-stack-run-%s", RegistryUrl, uuid.NewString())
+	baseImages.RunArchive = filepath.Join(root, "builds", "resolute-base-images", "run.oci")
+	baseImages.RunImageID = fmt.Sprintf("%s/resolute-base-run-image-%s", RegistryUrl, uuid.NewString())
 
-	tinyStack.RunArchive = filepath.Join(root, "builds", "noble-tiny-stack", "run.oci")
-	tinyStack.RunImageID = fmt.Sprintf("%s/noble-tiny-stack-run-%s", RegistryUrl, uuid.NewString())
+	tinyImages.RunArchive = filepath.Join(root, "builds", "resolute-tiny-images", "run.oci")
+	tinyImages.RunImageID = fmt.Sprintf("%s/resolute-tiny-run-image-%s", RegistryUrl, uuid.NewString())
 
-	staticStack.RunArchive = filepath.Join(root, "builds", "noble-static-stack", "run.oci")
-	staticStack.RunImageID = fmt.Sprintf("%s/noble-static-stack-run-%s", RegistryUrl, uuid.NewString())
+	staticImages.RunArchive = filepath.Join(root, "builds", "resolute-static-images", "run.oci")
+	staticImages.RunImageID = fmt.Sprintf("%s/resolute-static-run-image-%s", RegistryUrl, uuid.NewString())
 
 	suite := spec.New("Acceptance", spec.Report(report.Terminal{}), spec.Parallel())
-	suite("MetadataTinyStack", testMetadataTinyStack)
-	suite("MetadataBaseStack", testMetadataBaseStack)
-	suite("MetadataStaticStack", testMetadataStaticStack)
+	suite("MetadataBaseImages", testMetadataBaseImages)
+	suite("MetadataTinyImages", testMetadataTinyImages)
+	suite("MetadataStaticImages", testMetadataStaticImages)
 	suite("BuildpackIntegrationTinyStack", testBuildpackIntegrationTinyStack)
 	suite("BuildpackIntegrationBaseStack", testBuildpackIntegrationBaseStack)
 	suite.Run(t)

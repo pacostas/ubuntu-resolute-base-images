@@ -15,7 +15,7 @@ import (
 	. "github.com/paketo-buildpacks/occam/matchers"
 )
 
-func testMetadataBaseStack(t *testing.T, context spec.G, it spec.S) {
+func testMetadataBaseImages(t *testing.T, context spec.G, it spec.S) {
 	var (
 		Expect = NewWithT(t).Expect
 
@@ -32,7 +32,7 @@ func testMetadataBaseStack(t *testing.T, context spec.G, it spec.S) {
 		Expect(os.RemoveAll(tmpDir)).To(Succeed())
 	})
 
-	it("builds base stack", func() {
+	it("builds base images", func() {
 		var buildReleaseDate, runReleaseDate time.Time
 
 		by("confirming that the build image is correct", func() {
@@ -40,7 +40,7 @@ func testMetadataBaseStack(t *testing.T, context spec.G, it spec.S) {
 			err := os.Mkdir(dir, os.ModePerm)
 			Expect(err).NotTo(HaveOccurred())
 
-			archive, err := os.Open(baseStack.BuildArchive)
+			archive, err := os.Open(baseImages.BuildArchive)
 			Expect(err).NotTo(HaveOccurred())
 			defer archive.Close()
 
@@ -73,11 +73,11 @@ func testMetadataBaseStack(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(file.Config.Labels).To(SatisfyAll(
-				HaveKeyWithValue("io.buildpacks.stack.id", "io.buildpacks.stacks.noble"),
-				HaveKeyWithValue("io.buildpacks.stack.description", "ubuntu:noble with compilers and shell utilities"),
+				HaveKeyWithValue("io.buildpacks.stack.id", "io.buildpacks.stacks.resolute"),
+				HaveKeyWithValue("io.buildpacks.stack.description", "ubuntu:resolute with compilers and shell utilities"),
 				HaveKeyWithValue("io.buildpacks.stack.distro.name", "ubuntu"),
-				HaveKeyWithValue("io.buildpacks.stack.distro.version", "24.04"),
-				HaveKeyWithValue("io.buildpacks.stack.homepage", "https://github.com/paketo-buildpacks/noble-base-stack"),
+				HaveKeyWithValue("io.buildpacks.stack.distro.version", "26.04"),
+				HaveKeyWithValue("io.buildpacks.stack.homepage", "https://github.com/paketo-buildpacks/ubuntu-resolute-base-images"),
 				HaveKeyWithValue("io.buildpacks.stack.maintainer", "Paketo Buildpacks"),
 				HaveKeyWithValue("io.buildpacks.stack.metadata", MatchJSON("{}")),
 			))
@@ -97,7 +97,7 @@ func testMetadataBaseStack(t *testing.T, context spec.G, it spec.S) {
 			Expect(file.Config.Env).To(ContainElements(
 				"CNB_USER_ID=1001",
 				"CNB_GROUP_ID=1001",
-				"CNB_STACK_ID=io.buildpacks.stacks.noble",
+				"CNB_STACK_ID=io.buildpacks.stacks.resolute",
 			))
 
 			Expect(image).To(HaveFileWithContent("/etc/gitconfig", ContainLines(
@@ -131,7 +131,7 @@ func testMetadataBaseStack(t *testing.T, context spec.G, it spec.S) {
 			err := os.Mkdir(dir, os.ModePerm)
 			Expect(err).NotTo(HaveOccurred())
 
-			archive, err := os.Open(baseStack.RunArchive)
+			archive, err := os.Open(baseImages.RunArchive)
 			Expect(err).NotTo(HaveOccurred())
 			defer archive.Close()
 
@@ -164,11 +164,11 @@ func testMetadataBaseStack(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(file.Config.Labels).To(SatisfyAll(
-				HaveKeyWithValue("io.buildpacks.stack.id", "io.buildpacks.stacks.noble"),
-				HaveKeyWithValue("io.buildpacks.stack.description", "ubuntu:noble with some common dependencies like tzdata and openssl"),
+				HaveKeyWithValue("io.buildpacks.stack.id", "io.buildpacks.stacks.resolute"),
+				HaveKeyWithValue("io.buildpacks.stack.description", "ubuntu:resolute with some common dependencies like tzdata and openssl"),
 				HaveKeyWithValue("io.buildpacks.stack.distro.name", "ubuntu"),
-				HaveKeyWithValue("io.buildpacks.stack.distro.version", "24.04"),
-				HaveKeyWithValue("io.buildpacks.stack.homepage", "https://github.com/paketo-buildpacks/noble-base-stack"),
+				HaveKeyWithValue("io.buildpacks.stack.distro.version", "26.04"),
+				HaveKeyWithValue("io.buildpacks.stack.homepage", "https://github.com/paketo-buildpacks/ubuntu-resolute-base-images"),
 				HaveKeyWithValue("io.buildpacks.stack.maintainer", "Paketo Buildpacks"),
 				HaveKeyWithValue("io.buildpacks.stack.metadata", MatchJSON("{}")),
 			))
@@ -211,10 +211,10 @@ func testMetadataBaseStack(t *testing.T, context spec.G, it spec.S) {
 			Expect(image).NotTo(HaveFile("/usr/share/ca-certificates"))
 
 			Expect(image).To(HaveFileWithContent("/etc/os-release", SatisfyAll(
-				ContainSubstring(`PRETTY_NAME="Paketo Buildpacks Base Noble"`),
-				ContainSubstring(`HOME_URL="https://github.com/paketo-buildpacks/noble-base-stack"`),
-				ContainSubstring(`SUPPORT_URL="https://github.com/paketo-buildpacks/noble-base-stack/blob/main/README.md"`),
-				ContainSubstring(`BUG_REPORT_URL="https://github.com/paketo-buildpacks/noble-base-stack/issues/new"`),
+				ContainSubstring(`PRETTY_NAME="Paketo Buildpacks Base Resolute"`),
+				ContainSubstring(`HOME_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images"`),
+				ContainSubstring(`SUPPORT_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images/blob/main/README.md"`),
+				ContainSubstring(`BUG_REPORT_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images/issues/new"`),
 			)))
 		})
 		Expect(runReleaseDate).To(Equal(buildReleaseDate))

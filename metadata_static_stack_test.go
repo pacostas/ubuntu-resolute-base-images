@@ -15,7 +15,7 @@ import (
 	. "github.com/paketo-buildpacks/jam/integration/matchers"
 )
 
-func testMetadataStaticStack(t *testing.T, context spec.G, it spec.S) {
+func testMetadataStaticImages(t *testing.T, context spec.G, it spec.S) {
 	var (
 		Expect = NewWithT(t).Expect
 
@@ -32,7 +32,7 @@ func testMetadataStaticStack(t *testing.T, context spec.G, it spec.S) {
 		Expect(os.RemoveAll(tmpDir)).To(Succeed())
 	})
 
-	it("builds static stack", func() {
+	it("builds static images", func() {
 		var runReleaseDate time.Time
 
 		by("confirming that the run image is correct", func() {
@@ -40,7 +40,7 @@ func testMetadataStaticStack(t *testing.T, context spec.G, it spec.S) {
 			err := os.Mkdir(dir, os.ModePerm)
 			Expect(err).NotTo(HaveOccurred())
 
-			archive, err := os.Open(staticStack.RunArchive)
+			archive, err := os.Open(staticImages.RunArchive)
 			Expect(err).NotTo(HaveOccurred())
 			defer archive.Close()
 
@@ -80,11 +80,11 @@ func testMetadataStaticStack(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(file.Config.Labels).To(SatisfyAll(
-				HaveKeyWithValue("io.buildpacks.stack.id", "io.buildpacks.stacks.noble.static"),
-				HaveKeyWithValue("io.buildpacks.stack.description", "noble for statically-linked applications containing tzdata and ca-certificates"),
+				HaveKeyWithValue("io.buildpacks.stack.id", "io.buildpacks.stacks.resolute.static"),
+				HaveKeyWithValue("io.buildpacks.stack.description", "resolute for statically-linked applications containing tzdata and ca-certificates"),
 				HaveKeyWithValue("io.buildpacks.stack.distro.name", "ubuntu"),
-				HaveKeyWithValue("io.buildpacks.stack.distro.version", "24.04"),
-				HaveKeyWithValue("io.buildpacks.stack.homepage", "https://github.com/paketo-buildpacks/noble-static-stack"),
+				HaveKeyWithValue("io.buildpacks.stack.distro.version", "26.04"),
+				HaveKeyWithValue("io.buildpacks.stack.homepage", "https://github.com/paketo-buildpacks/ubuntu-resolute-base-images"),
 				HaveKeyWithValue("io.buildpacks.stack.maintainer", "Paketo Buildpacks"),
 				HaveKeyWithValue("io.buildpacks.stack.metadata", MatchJSON("{}")),
 			))
@@ -123,10 +123,10 @@ func testMetadataStaticStack(t *testing.T, context spec.G, it spec.S) {
 			Expect(image).NotTo(HaveFile("/usr/share/ca-certificates"))
 
 			Expect(image).To(HaveFileWithContent("/etc/os-release", SatisfyAll(
-				ContainSubstring(`PRETTY_NAME="Paketo Buildpacks Static Noble"`),
-				ContainSubstring(`HOME_URL="https://github.com/paketo-buildpacks/noble-static-stack"`),
-				ContainSubstring(`SUPPORT_URL="https://github.com/paketo-buildpacks/noble-static-stack/blob/main/README.md"`),
-				ContainSubstring(`BUG_REPORT_URL="https://github.com/paketo-buildpacks/noble-static-stack/issues/new"`),
+				ContainSubstring(`PRETTY_NAME="Paketo Buildpacks Static Resolute"`),
+				ContainSubstring(`HOME_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images"`),
+				ContainSubstring(`SUPPORT_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images/blob/main/README.md"`),
+				ContainSubstring(`BUG_REPORT_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images/issues/new"`),
 			)))
 		})
 	})
