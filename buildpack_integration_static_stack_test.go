@@ -15,15 +15,13 @@ import (
 	. "github.com/paketo-buildpacks/occam/matchers"
 )
 
-func testBuildpackIntegrationBaseImages(t *testing.T, context spec.G, it spec.S) {
+func testBuildpackIntegrationStaticImages(t *testing.T, context spec.G, it spec.S) {
 	var (
 		Expect     = NewWithT(t).Expect
 		Eventually = NewWithT(t).Eventually
 
-		mavenBuildpack         string
-		jvmBuildpack           string
-		syftBuildpack          string
-		executableJarBuildpack string
+		goDistBuildpack  string
+		goBuildBuildpack string
 
 		builderConfigFilepath string
 
@@ -46,12 +44,10 @@ func testBuildpackIntegrationBaseImages(t *testing.T, context spec.G, it spec.S)
 		name, err = occam.RandomName()
 		Expect(err).NotTo(HaveOccurred())
 
-		mavenBuildpack = "docker.io/paketobuildpacks/maven"
-		jvmBuildpack = "docker.io/paketobuildpacks/sap-machine"
-		syftBuildpack = "docker.io/paketobuildpacks/syft"
-		executableJarBuildpack = "docker.io/paketobuildpacks/executable-jar"
+		goDistBuildpack = "docker.io/paketobuildpacks/go-dist"
+		goBuildBuildpack = "docker.io/paketobuildpacks/go-build"
 
-		source, err = occam.Source(filepath.Join("integration", "testdata", "java_simple_app"))
+		source, err = occam.Source(filepath.Join("integration", "testdata", "go_simple_app"))
 		Expect(err).NotTo(HaveOccurred())
 
 		builderConfigFile, err := os.CreateTemp("", "builder.toml")
@@ -59,11 +55,13 @@ func testBuildpackIntegrationBaseImages(t *testing.T, context spec.G, it spec.S)
 		builderConfigFilepath = builderConfigFile.Name()
 
 		_, err = fmt.Fprintf(builderConfigFile, `
-
 [build]
   image = "%s:latest"
 
 [run]
+
+  [[run.images]]
+    image = "%s:latest"
 
   [[run.images]]
     image = "%s:latest"
@@ -75,21 +73,16 @@ func testBuildpackIntegrationBaseImages(t *testing.T, context spec.G, it spec.S)
 [[targets]]
   arch = "arm64"
   os = "linux"
-
-[stack]
-  build-image = "%s:latest"
-  id = "io.buildpacks.stacks.resolute"
-  run-image = "%s:latest"
 `,
 			baseImages.BuildImageID,
 			baseImages.RunImageID,
-			baseImages.BuildImageID,
-			baseImages.RunImageID,
+			staticImages.RunImageID,
 		)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(archiveToDaemon(baseImages.BuildArchive, baseImages.BuildImageID)).To(Succeed())
 		Expect(archiveToDaemon(baseImages.RunArchive, baseImages.RunImageID)).To(Succeed())
+		Expect(archiveToDaemon(staticImages.RunArchive, staticImages.RunImageID)).To(Succeed())
 
 		builder = fmt.Sprintf("builder-%s", uuid.NewString())
 		logs, err := createBuilder(builderConfigFilepath, builder)
@@ -104,8 +97,7 @@ func testBuildpackIntegrationBaseImages(t *testing.T, context spec.G, it spec.S)
 		Expect(docker.Image.Remove.Execute(builder)).To(Succeed())
 		Expect(os.RemoveAll(builderConfigFilepath)).To(Succeed())
 
-		Expect(docker.Image.Remove.Execute(baseImages.BuildImageID)).To(Succeed())
-		Expect(docker.Image.Remove.Execute(baseImages.RunImageID)).To(Succeed())
+		Expect(docker.Image.Remove.Execute(staticImages.RunImageID)).To(Succeed())
 
 		Expect(os.RemoveAll(source)).To(Succeed())
 	})
@@ -113,21 +105,23 @@ func testBuildpackIntegrationBaseImages(t *testing.T, context spec.G, it spec.S)
 	it("builds an app with a buildpack", func() {
 		var err error
 		var logs fmt.Stringer
-
 		image, logs, err = pack.WithNoColor().Build.
-			WithPullPolicy("if-not-present").
 			WithBuildpacks(
-				jvmBuildpack,
-				syftBuildpack,
-				mavenBuildpack,
-				executableJarBuildpack,
+				goDistBuildpack,
+				goBuildBuildpack,
 			).
 			WithEnv(map[string]string{
-				"BP_LOG_LEVEL": "DEBUG",
+				"BP_LOG_LEVEL":      "DEBUG",
+				"CGO_ENABLED":       "0",
+				"BP_GO_BUILD_FLAGS": "-buildmode=default",
 			}).
+			WithPullPolicy("if-not-present").
+			WithRunImage(staticImages.RunImageID).
 			WithBuilder(builder).
 			Execute(name, source)
 		Expect(err).ToNot(HaveOccurred(), logs.String)
+
+		Expect(logs.String()).To(ContainSubstring("Using provided run-image '%s'", staticImages.RunImageID))
 
 		container, err = docker.Container.Run.
 			WithEnv(map[string]string{"PORT": "8080"}).
@@ -137,6 +131,6 @@ func testBuildpackIntegrationBaseImages(t *testing.T, context spec.G, it spec.S)
 		Expect(err).NotTo(HaveOccurred())
 
 		Eventually(container).Should(BeAvailable())
-		Eventually(container).Should(Serve(ContainSubstring("Hello World! Java version")).OnPort(8080))
+		Eventually(container).Should(Serve(MatchRegexp(`go1.*`)).OnPort(8080))
 	})
 }

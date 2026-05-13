@@ -8,9 +8,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-containerregistry/pkg/authn"
+	"github.com/google/go-containerregistry/pkg/name"
+	"github.com/google/go-containerregistry/pkg/v1/layout"
+	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/google/uuid"
 	"github.com/onsi/gomega/format"
 	"github.com/paketo-buildpacks/packit/v2/pexec"
+	"github.com/paketo-buildpacks/packit/vacation"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 
@@ -67,8 +72,9 @@ func TestAcceptance(t *testing.T) {
 	suite("MetadataBaseImages", testMetadataBaseImages)
 	suite("MetadataTinyImages", testMetadataTinyImages)
 	suite("MetadataStaticImages", testMetadataStaticImages)
-	suite("BuildpackIntegrationTinyStack", testBuildpackIntegrationTinyStack)
 	suite("BuildpackIntegrationBaseStack", testBuildpackIntegrationBaseStack)
+	suite("BuildpackIntegrationTinyStack", testBuildpackIntegrationTinyStack)
+	suite("BuildpackIntegrationStaticStack", testBuildpackIntegrationStaticStack)
 	suite.Run(t)
 }
 
@@ -87,4 +93,35 @@ func createBuilder(config string, name string) (string, error) {
 		},
 	})
 	return buf.String(), err
+}
+
+func archiveToDaemon(path, id string) error {
+	tmpDir := os.TempDir()
+
+	tarReader, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("unable to open tar: %w", err)
+	}
+
+	err = vacation.NewTarArchive(tarReader).Decompress(tmpDir)
+	if err != nil {
+		return fmt.Errorf("unable to extract files: %w", err)
+	}
+
+	pathLayout, err := layout.FromPath(tmpDir)
+	if err != nil {
+		return fmt.Errorf("unable to load image from path %s: %w", tmpDir, err)
+	}
+
+	imageIndex, err := pathLayout.ImageIndex()
+	if err != nil {
+		return fmt.Errorf("unable to read image index: %w", err)
+	}
+
+	ref, err := name.ParseReference(id)
+	if err != nil {
+		return fmt.Errorf("unable to parse reference from %s: %w", id, err)
+	}
+
+	return remote.WriteIndex(ref, imageIndex, remote.WithAuthFromKeychain(authn.DefaultKeychain))
 }
