@@ -5,8 +5,8 @@ maintainer = "Paketo Buildpacks"
 platforms = ["linux/amd64", "linux/arm64"]
 
 [build]
-  description = "ubuntu:resolute with compilers and shell utilities"
   dockerfile = "./build.Dockerfile"
+  description = "minimal placeholder build image (only the run image is used)"
   gid = 1001
   shell = "/bin/bash"
   uid = 1001
@@ -14,17 +14,8 @@ platforms = ["linux/amd64", "linux/arm64"]
   [build.args]
     architecture = "amd64"
 
-    packages = ""
-
   [build.platforms."linux/arm64".args]
     architecture = "arm64"
-
-    sources = """
-Types: deb
-URIs: http://ports.ubuntu.com/ubuntu-ports/
-Suites: resolute resolute-updates resolute-security
-Components: main universe multiverse
-    """
 
 [run]
   description = "resolute for statically-linked applications containing tzdata and ca-certificates"
