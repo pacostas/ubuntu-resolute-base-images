@@ -15,7 +15,7 @@ import (
 	. "github.com/paketo-buildpacks/jam/integration/matchers"
 )
 
-func testMetadataTinyStack(t *testing.T, context spec.G, it spec.S) {
+func testMetadataTinyImages(t *testing.T, context spec.G, it spec.S) {
 	var (
 		Expect = NewWithT(t).Expect
 
@@ -32,7 +32,7 @@ func testMetadataTinyStack(t *testing.T, context spec.G, it spec.S) {
 		Expect(os.RemoveAll(tmpDir)).To(Succeed())
 	})
 
-	it("builds tiny stack", func() {
+	it("builds tiny images", func() {
 		var runReleaseDate time.Time
 
 		by("confirming that the run image is correct", func() {
@@ -40,7 +40,7 @@ func testMetadataTinyStack(t *testing.T, context spec.G, it spec.S) {
 			err := os.Mkdir(dir, os.ModePerm)
 			Expect(err).NotTo(HaveOccurred())
 
-			archive, err := os.Open(tinyStack.RunArchive)
+			archive, err := os.Open(tinyImages.RunArchive)
 			Expect(err).NotTo(HaveOccurred())
 			defer archive.Close()
 
@@ -80,11 +80,11 @@ func testMetadataTinyStack(t *testing.T, context spec.G, it spec.S) {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(file.Config.Labels).To(SatisfyAll(
-				HaveKeyWithValue("io.buildpacks.stack.id", "io.buildpacks.stacks.noble"),
-				HaveKeyWithValue("io.buildpacks.stack.description", "distroless-like noble"),
+				HaveKeyWithValue("io.buildpacks.stack.id", "io.buildpacks.stacks.resolute.tiny"),
+				HaveKeyWithValue("io.buildpacks.stack.description", "distroless-like resolute"),
 				HaveKeyWithValue("io.buildpacks.stack.distro.name", "ubuntu"),
-				HaveKeyWithValue("io.buildpacks.stack.distro.version", "24.04"),
-				HaveKeyWithValue("io.buildpacks.stack.homepage", "https://github.com/paketo-buildpacks/noble-tiny-stack"),
+				HaveKeyWithValue("io.buildpacks.stack.distro.version", "26.04"),
+				HaveKeyWithValue("io.buildpacks.stack.homepage", "https://github.com/paketo-buildpacks/ubuntu-resolute-base-images"),
 				HaveKeyWithValue("io.buildpacks.stack.maintainer", "Paketo Buildpacks"),
 				HaveKeyWithValue("io.buildpacks.stack.metadata", MatchJSON("{}")),
 			))
@@ -204,7 +204,7 @@ func testMetadataTinyStack(t *testing.T, context spec.G, it spec.S) {
 
 			Expect(image).To(HaveFileWithContent("/var/lib/dpkg/status.d/zlib1g", SatisfyAll(
 				ContainSubstring("Package: zlib1g"),
-				MatchRegexp("Version: [a-z0-9\\.\\-\\:]+ubuntu[0-9\\.]+"),
+				MatchRegexp("Version: [a-z0-9.+:\\-]+ubuntu[0-9.]+"),
 				SatisfyAny(
 					ContainSubstring("Architecture: amd64"),
 					ContainSubstring("Architecture: arm64")),
@@ -219,10 +219,10 @@ func testMetadataTinyStack(t *testing.T, context spec.G, it spec.S) {
 			Expect(image).NotTo(HaveFile("/usr/share/ca-certificates"))
 
 			Expect(image).To(HaveFileWithContent("/etc/os-release", SatisfyAll(
-				ContainSubstring(`PRETTY_NAME="Paketo Buildpacks Tiny Noble"`),
-				ContainSubstring(`HOME_URL="https://github.com/paketo-buildpacks/noble-tiny-stack"`),
-				ContainSubstring(`SUPPORT_URL="https://github.com/paketo-buildpacks/noble-tiny-stack/blob/main/README.md"`),
-				ContainSubstring(`BUG_REPORT_URL="https://github.com/paketo-buildpacks/noble-tiny-stack/issues/new"`),
+				ContainSubstring(`PRETTY_NAME="Paketo Buildpacks Tiny Resolute"`),
+				ContainSubstring(`HOME_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images"`),
+				ContainSubstring(`SUPPORT_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images/blob/main/README.md"`),
+				ContainSubstring(`BUG_REPORT_URL="https://github.com/paketo-buildpacks/ubuntu-resolute-base-images/issues/new"`),
 			)))
 		})
 	})
