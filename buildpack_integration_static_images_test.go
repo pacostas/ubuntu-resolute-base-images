@@ -63,9 +63,6 @@ func testBuildpackIntegrationStaticImages(t *testing.T, context spec.G, it spec.
   [[run.images]]
     image = "%s:latest"
 
-  [[run.images]]
-    image = "%s:latest"
-
 [[targets]]
   arch = "amd64"
   os = "linux"
@@ -76,7 +73,6 @@ func testBuildpackIntegrationStaticImages(t *testing.T, context spec.G, it spec.
 `,
 			baseImages.BuildImageID,
 			baseImages.RunImageID,
-			staticImages.RunImageID,
 		)
 		Expect(err).NotTo(HaveOccurred())
 
