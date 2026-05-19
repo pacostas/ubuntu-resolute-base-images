@@ -38,6 +38,39 @@
       "stack_type": "base",
       "pattern_image_registry_name": "os_name-os_codename-build_image_run_image",
       "pattern_assets_prefix": "os_name-os_codename-build_image_run_image-version-arch"
+    },
+    {
+      "name": "resolute-tiny-no-stacks",
+      "config_dir": "images/resolute-tiny-images-no-stack-id",
+      "output_dir": "builds/resolute-tiny-images-no-stack-id",
+      "build_image": "build",
+      "run_image": "run",
+      "stack_type": "tiny-no-stacks",
+      "pattern_image_registry_name": "os_name-os_codename-build_image_run_image-stack_type",
+      "pattern_assets_prefix": "os_name-os_codename-build_image_run_image-stack_type-version-arch"
+    },
+    {
+      "name": "resolute-static-no-stacks",
+      "config_dir": "images/resolute-static-images-no-stack-id",
+      "output_dir": "builds/resolute-static-images-no-stack-id",
+      "build_image": "build",
+      "run_image": "run",
+      "build_receipt_filename": "build-receipt.cyclonedx.json",
+      "run_receipt_filename": "run-receipt.cyclonedx.json",
+      "stack_type": "static-no-stacks",
+      "pattern_image_registry_name": "os_name-os_codename-build_image_run_image-stack_type",
+      "pattern_assets_prefix": "os_name-os_codename-build_image_run_image-stack_type-version-arch"
+    },
+    {
+      "name": "resolute-base-no-stacks",
+      "config_dir": "images/resolute-base-images-no-stack-id",
+      "output_dir": "builds/resolute-base-images-no-stack-id",
+      "build_image": "build",
+      "run_image": "run",
+      "create_build_image": true,
+      "stack_type": "no-stacks",
+      "pattern_image_registry_name": "os_name-os_codename-build_image_run_image-stack_type",
+      "pattern_assets_prefix": "os_name-os_codename-build_image_run_image-stack_type-version-arch"
     }
   ]
 }
