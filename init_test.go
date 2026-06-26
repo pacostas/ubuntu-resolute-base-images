@@ -39,6 +39,23 @@ var staticImages struct {
 	RunImageID string
 }
 
+var tinyImagesNoStacks struct {
+	RunArchive string
+	RunImageID string
+}
+
+var baseImagesNoStacks struct {
+	BuildArchive string
+	RunArchive   string
+	BuildImageID string
+	RunImageID   string
+}
+
+var staticImagesNoStacks struct {
+	RunArchive string
+	RunImageID string
+}
+
 var RegistryUrl string
 
 func by(_ string, f func()) { f() }
@@ -68,13 +85,31 @@ func TestAcceptance(t *testing.T) {
 	staticImages.RunArchive = filepath.Join(root, "builds", "resolute-static-images", "run.oci")
 	staticImages.RunImageID = fmt.Sprintf("%s/resolute-static-run-image-%s", RegistryUrl, uuid.NewString())
 
+	baseImagesNoStacks.BuildArchive = filepath.Join(root, "builds", "resolute-base-images-no-stack-id", "build.oci")
+	baseImagesNoStacks.BuildImageID = fmt.Sprintf("%s/resolute-base-build-image-no-stacks-%s", RegistryUrl, uuid.NewString())
+
+	baseImagesNoStacks.RunArchive = filepath.Join(root, "builds", "resolute-base-images-no-stack-id", "run.oci")
+	baseImagesNoStacks.RunImageID = fmt.Sprintf("%s/resolute-base-run-image-no-stacks-%s", RegistryUrl, uuid.NewString())
+
+	tinyImagesNoStacks.RunArchive = filepath.Join(root, "builds", "resolute-tiny-images-no-stack-id", "run.oci")
+	tinyImagesNoStacks.RunImageID = fmt.Sprintf("%s/resolute-tiny-run-image-no-stacks-%s", RegistryUrl, uuid.NewString())
+
+	staticImagesNoStacks.RunArchive = filepath.Join(root, "builds", "resolute-static-images-no-stack-id", "run.oci")
+	staticImagesNoStacks.RunImageID = fmt.Sprintf("%s/resolute-static-run-image-no-stacks-%s", RegistryUrl, uuid.NewString())
+
 	suite := spec.New("Acceptance", spec.Report(report.Terminal{}), spec.Parallel())
 	suite("MetadataBaseImages", testMetadataBaseImages)
 	suite("MetadataTinyImages", testMetadataTinyImages)
 	suite("MetadataStaticImages", testMetadataStaticImages)
+	suite("MetadataBaseImagesNoStacks", testMetadataBaseImagesNoStacks)
+	suite("MetadataTinyImagesNoStacks", testMetadataTinyImagesNoStacks)
+	suite("MetadataStaticImagesNoStacks", testMetadataStaticImagesNoStacks)
 	suite("BuildpackIntegrationBaseImages", testBuildpackIntegrationBaseImages)
 	suite("BuildpackIntegrationTinyImages", testBuildpackIntegrationTinyImages)
 	suite("BuildpackIntegrationStaticImages", testBuildpackIntegrationStaticImages)
+	suite("BuildpackIntegrationBaseImagesNoStacks", testBuildpackIntegrationBaseImagesNoStacks)
+	suite("BuildpackIntegrationTinyImagesNoStacks", testBuildpackIntegrationTinyImagesNoStacks)
+	suite("BuildpackIntegrationStaticImagesNoStacks", testBuildpackIntegrationStaticImagesNoStacks)
 	suite.Run(t)
 }
 
