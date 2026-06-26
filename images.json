@@ -47,7 +47,8 @@
       "run_image": "run",
       "stack_type": "tiny-no-stacks",
       "pattern_image_registry_name": "os_name-os_codename-build_image_run_image-stack_type",
-      "pattern_assets_prefix": "os_name-os_codename-build_image_run_image-stack_type-version-arch"
+      "pattern_assets_prefix": "os_name-os_codename-build_image_run_image-stack_type-version-arch",
+      "no_stack_id": true
     },
     {
       "name": "resolute-static-no-stacks",
@@ -59,7 +60,8 @@
       "run_receipt_filename": "run-receipt.cyclonedx.json",
       "stack_type": "static-no-stacks",
       "pattern_image_registry_name": "os_name-os_codename-build_image_run_image-stack_type",
-      "pattern_assets_prefix": "os_name-os_codename-build_image_run_image-stack_type-version-arch"
+      "pattern_assets_prefix": "os_name-os_codename-build_image_run_image-stack_type-version-arch",
+      "no_stack_id": true
     },
     {
       "name": "resolute-base-no-stacks",
@@ -70,7 +72,8 @@
       "create_build_image": true,
       "stack_type": "no-stacks",
       "pattern_image_registry_name": "os_name-os_codename-build_image_run_image-stack_type",
-      "pattern_assets_prefix": "os_name-os_codename-build_image_run_image-stack_type-version-arch"
+      "pattern_assets_prefix": "os_name-os_codename-build_image_run_image-stack_type-version-arch",
+      "no_stack_id": true
     }
   ]
 }
