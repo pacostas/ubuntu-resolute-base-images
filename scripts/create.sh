@@ -54,8 +54,8 @@ function main() {
         ;;
 
       --no-stack-id)
-        no_stack_id="${2}"
-        shift 2
+        no_stack_id="true"
+        shift 1
         ;;
 
       "")
